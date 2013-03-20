@@ -1,0 +1,80 @@
+Scenario: a store created in Plesk doesn't have new DNS UI
+Given a store is created in the Plesk server
+When user logs in as admin
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
+
+Scenario:  a store created in Plesk doesn't support DNSService flag
+Given a store is created in the Plesk server
+When user logs in as admin
+And user turns DNSService feature flag on (admin/index.php?ToDo=enable&feature=DNSService)
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
+
+Scenario: server-wide flag ON
+Given a store is created in the Pleskless server with 'USE_POWERDNS=1'
+When user logs in as admin
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/tools/domains'
+And the DNS Records page should be using the new UI
+
+Scenario: server-wide flag ON v.s store-wide OFF
+Given a store is created in the Pleskless server with 'USE_POWERDNS=1'
+When user logs in as admin
+And user turns DNSService feature flag off (admin/index.php?ToDo=disable&feature=DNSService)
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
+
+Scenario: server-wide flag ON v.s store-wide ON
+Given a store is created in the Pleskless server with 'USE_POWERDNS=1'
+When user logs in as admin
+And user turns DNSService feature flag on (admin/index.php?ToDo=enable&feature=DNSService)
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/tools/domains'
+And the DNS Records page should be using the new UI
+
+Scenario: server-wide flag doesn't affect existing stores - case 1
+Given store 'a 'is created in the Pleskless server with 'USE_POWERDNS=1'
+When user logs in as admin
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/tools/domains'
+And the DNS Records page should be using the new UI
+When the server-wide flag is changed to 'USE_POWERDNS=0'
+Then  store 'a' should still be using new DNS UI
+
+Scenario: server-wide flag doesn't affect existing stores - case 2
+Given store 'b'is created in the Pleskless server with 'USE_POWERDNS=0'
+When user logs in as admin
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
+When the server-wide flag is changed to 'USE_POWERDNS=1'
+Then  store 'b' should still be using old DNS UI
+
+
+Scenario:  server-wide flag OFF
+Given a store is created in the Pleskless server with 'USE_POWERDNS=0'
+When user logs in as admin
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
+
+
+Scenario: sever-wide flag OFF v.s store-wide flag ON
+Given a store is created in the Pleskless server with 'USE_POWERDNS=0'
+When user logs in as admin
+And user turns DNSService feature flag on (admin/index.php?ToDo=enable&feature=DNSService)
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/tools/domains'
+And the DNS Records page should be using the new UI
+
+Scenario: server-wide flag OFF v.s store-wide flag OFF
+Given a store is created in the Pleskless server with 'USE_POWERDNS=0'
+When user logs in as admin
+And user turns DNSService feature flag off (admin/index.php?ToDo=disable&feature=DNSService)
+And user clicks 'DNS Records' item from Tools dropdown menu
+Then the URL should be 'admin/index.php?ToDo=viewDNSRecords'
+And the DNS Records page should be using the old UI
